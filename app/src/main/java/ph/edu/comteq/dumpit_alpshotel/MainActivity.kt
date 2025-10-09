@@ -48,6 +48,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.gson.Gson
 import ph.edu.comteq.dumpit_alpshotel.ui.theme.Dumpit_alpshotelTheme
+import kotlin.math.floor
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -173,8 +174,9 @@ fun HotelCard(hotel: Hotel) {
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
+                    val starCount = floor(hotel.hotel_rating).toInt()
                     //star
-                    repeat(4) {
+                    repeat(starCount) {
                         Icon(
                             imageVector = Icons.Filled.Star,
                             contentDescription = "Star",
@@ -199,3 +201,4 @@ fun HomepagePreview() {
         Homepage()
     }
 }
+
