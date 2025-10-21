@@ -60,10 +60,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val json = assets.open("hotel_details.1000.json")
-        val reader = InputStreamReader(json)
-        val hotelDetails = Gson().fromJson(reader, HotelDetails::class.java)
-        reader.close()
 
         setContent {
             Dumpit_alpshotelTheme {
