@@ -1,12 +1,15 @@
 package ph.edu.comteq.dumpit_alpshotel
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.Placeholder
+import ph.edu.comteq.dumpit_alpshotel.HotelDetails
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,12 +52,19 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.gson.Gson
 import ph.edu.comteq.dumpit_alpshotel.ui.theme.Dumpit_alpshotelTheme
+import kotlin.jvm.java
 import kotlin.math.floor
+import java.io.InputStreamReader
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val json = assets.open("hotel_details.1000.json")
+        val reader = InputStreamReader(json)
+        val hotelDetails = Gson().fromJson(reader, HotelDetails::class.java)
+        reader.close()
+
         setContent {
             Dumpit_alpshotelTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -89,7 +100,9 @@ fun Homepage(modifier: Modifier = Modifier) {
         modifier = modifier
     ){
         Row (
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
@@ -100,20 +113,26 @@ fun Homepage(modifier: Modifier = Modifier) {
             )
             Image(
                 painter = painterResource(id = R.drawable.france_national_flag),
-                contentDescription = "Logo"
+                contentDescription = "Logo",
+                modifier = androidx.compose.ui.Modifier.size(width = 40.dp, height = 24.dp)
             )
-            //Right Side
             Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = "Profile",
-                modifier = Modifier.width(40.dp)
+                modifier = Modifier
+                    .width(40.dp)
+                    .clickable {
+                        val intent = Intent(context, AccountPage::class.java)
+                        context.startActivity(intent)
+                    }
             )
         }
         //Search bar
         OutlinedTextField(
             value = searchQuery,
             onValueChange = {newValue -> searchQuery = newValue},
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             placeholder = {Text("Search...")},
             singleLine = true,
@@ -137,14 +156,29 @@ fun Homepage(modifier: Modifier = Modifier) {
 }
 @Composable
 fun HotelCard(hotel: Hotel) {
-    Card (
-        modifier = Modifier.fillMaxWidth()
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
-    ){
-        Row (
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            .clickable {
+                val intent = Intent(context, HotelRatings::class.java).apply {
+                    // Pass data from the 'hotel' object
+                    putExtra("HOTEL_ID", hotel.hotel_id)
+                    putExtra("HOTEL_NAME", hotel.hotel_name)
+
+                    // FIX: Use the 'hotel' object to get the image path.
+                    putExtra("HOTEL_IMAGE_PATH", hotel.hotel_cover_image)
+                }
+                context.startActivity(intent)
+            },
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
-        ){
+        ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data("file:///android_asset/${hotel.hotel_cover_image}")
@@ -152,23 +186,27 @@ fun HotelCard(hotel: Hotel) {
                     .build(),
                 contentDescription = hotel.hotel_name,
                 placeholder = painterResource(R.drawable.ic_launcher_background),
-                modifier = Modifier.size(120.dp)
-                .clip(RoundedCornerShape(8.dp)),
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
-            Column (
-                modifier = Modifier.weight(1f).padding(horizontal = 12.dp)
-            ){
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp)
+            ) {
                 Text(
                     text = hotel.hotel_name,
-                    fontSize = 29.sp,
+                    // A smaller font size might fit better here
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines =  2,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Text(
                         hotel.hotel_rating.toString(),
                         fontSize = 18.sp,
@@ -194,6 +232,7 @@ fun HotelCard(hotel: Hotel) {
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun HomepagePreview() {
