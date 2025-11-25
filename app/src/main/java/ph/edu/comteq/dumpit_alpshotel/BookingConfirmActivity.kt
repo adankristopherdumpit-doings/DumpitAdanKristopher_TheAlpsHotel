@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import ph.edu.comteq.dumpit_alpshotel.ui.theme.Dumpit_alpshotelTheme
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,7 +38,13 @@ class BookingConfirmActivity : ComponentActivity() {
                         TopAppBar(
                             title = { Text("Booking Confirm") },
                             navigationIcon = {
-                                IconButton(onClick = { finish() }) {
+                                IconButton(onClick = {
+                                    // Navigate to MainActivity (Homepage)
+                                    val intent = Intent(this@BookingConfirmActivity, MainActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                    startActivity(intent)
+                                    finish()
+                                }) {
                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                                 }
                             }

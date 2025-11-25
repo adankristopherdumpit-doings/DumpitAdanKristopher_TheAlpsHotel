@@ -1,5 +1,6 @@
 package ph.edu.comteq.dumpit_alpshotel
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,7 +32,12 @@ class MyBookingsActivity : ComponentActivity() {
                         TopAppBar(
                             title = { Text("My Bookings") },
                             navigationIcon = {
-                                IconButton(onClick = { finish() }) {
+                                IconButton(onClick = {
+                                    // Navigate to MainActivity (Homepage)
+                                    val intent = Intent(this@MyBookingsActivity, MainActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                }) {
                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                                 }
                             }
@@ -47,6 +53,7 @@ class MyBookingsActivity : ComponentActivity() {
         }
     }
 }
+
 
 @Composable
 fun MyBookingsScreen(modifier: Modifier = Modifier, newBooking: Booking?) {
