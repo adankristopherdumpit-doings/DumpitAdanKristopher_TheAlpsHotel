@@ -1,27 +1,19 @@
 package ph.edu.comteq.dumpit_alpshotel
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,16 +23,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.google.gson.Gson
 import ph.edu.comteq.dumpit_alpshotel.ui.theme.Dumpit_alpshotelTheme
-import ph.edu.comteq.dumpit_alpshotel.HotelDetails
 
-// 1. THIS IS NOW A FULL ACTIVITY CLASS
 class HotelRatings : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // 2. RECEIVE DATA FROM THE INTENT
         val hotelId = intent.getIntExtra("HOTEL_ID", -1)
         val hotelName = intent.getStringExtra("HOTEL_NAME") ?: "Hotel Details"
         val hotelImagePath = intent.getStringExtra("HOTEL_IMAGE_PATH")
@@ -52,17 +41,17 @@ class HotelRatings : ComponentActivity() {
                         TopAppBar(
                             title = { Text(hotelName) },
                             navigationIcon = {
-                                IconButton(onClick = { finish() }) { // Back button
+                                IconButton(onClick = { finish() }) {
                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                                 }
                             }
                         )
                     }
                 ) { innerPadding ->
-                    // 3. LAUNCH THE SCREEN AND PASS THE RECEIVED DATA
                     HotelRatingsScreen(
                         modifier = Modifier.padding(innerPadding),
                         hotelId = hotelId,
+                        hotelName = hotelName,
                         hotelImagePath = hotelImagePath
                     )
                 }
@@ -71,45 +60,53 @@ class HotelRatings : ComponentActivity() {
     }
 }
 
-// 4. THIS FUNCTION NOW LOADS DATA BASED ON THE HOTEL ID
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HotelRatingsScreen(modifier: Modifier = Modifier, hotelId: Int, hotelImagePath: String?) {
+fun HotelRatingsScreen(
+    modifier: Modifier = Modifier,
+    hotelId: Int,
+    hotelName: String,
+    hotelImagePath: String?
+) {
     val context = LocalContext.current
     var hotelDetails by remember { mutableStateOf<HotelDetails?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // This block runs once to load the JSON data
+    // FIXED: Load specific hotel details file
     LaunchedEffect(hotelId) {
-        val jsonString = context.assets.open("hotel_details.json").bufferedReader().use { it.readText() }
-        val allDetails = Gson().fromJson(jsonString, HotelDetails::class.java)
+        try {
+            val fileName = "hotels_details.$hotelId.json"
+            println("DEBUG: Looking for file: $fileName")
 
-        // Find the correct hotel (assuming hotel_id matches)
-        if (allDetails.hotel_id == hotelId) {
-            hotelDetails = allDetails
+            // List all files in assets to see what's available
+            val files = context.assets.list("")
+            println("DEBUG: Available files in assets: ${files?.joinToString()}")
+
+            val jsonString = context.assets.open(fileName).bufferedReader().use { it.readText() }
+            hotelDetails = Gson().fromJson(jsonString, HotelDetails::class.java)
+            println("DEBUG: Successfully loaded hotel details for ID: $hotelId")
+        } catch (e: Exception) {
+            println("DEBUG: Error loading hotel details: ${e.message}")
+            e.printStackTrace()
         }
         isLoading = false
     }
 
-    // Show a loading indicator while data is being fetched
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
-        return // Stop here while loading
+        return
     }
 
-    // Show an error if the hotel wasn't found
     if (hotelDetails == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("Sorry, details for this hotel could not be found.")
         }
-        return // Stop here if no details
+        return
     }
 
-    // Main UI for the hotel details
     LazyColumn(modifier = modifier.fillMaxSize()) {
-
-        // Display the main hotel image
         item {
             AsyncImage(
                 model = "file:///android_asset/$hotelImagePath",
@@ -121,16 +118,14 @@ fun HotelRatingsScreen(modifier: Modifier = Modifier, hotelId: Int, hotelImagePa
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Display the tabs and their content
         item {
-            TabbedContent(hotelDetails!!)
+            TabbedContent(hotelDetails!!, hotelName, hotelImagePath ?: "")
         }
     }
 }
 
-// 5. NEW COMPOSABLE TO MANAGE TABS AND THEIR STATE
 @Composable
-fun TabbedContent(hotelDetails: HotelDetails) {
+fun TabbedContent(hotelDetails: HotelDetails, hotelName: String, hotelImagePath: String) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Guest Reviews", "Room Selection")
 
@@ -145,15 +140,13 @@ fun TabbedContent(hotelDetails: HotelDetails) {
             }
         }
 
-        // The content of the selected tab is shown
         when (selectedTabIndex) {
-            0 -> GuestReviewsTab(hotelDetails) // Corrected: Tab for reviews
-            1 -> RoomsTab(hotelDetails)        // Corrected: Tab for rooms
+            0 -> GuestReviewsTab(hotelDetails)
+            1 -> RoomsTab(hotelDetails, hotelName, hotelImagePath)
         }
     }
 }
 
-// 6. RENAMED and CLEANED UP: This is the content for the "Guest Reviews" tab
 @Composable
 fun GuestReviewsTab(hotelDetails: HotelDetails) {
     val guestReviews = hotelDetails.guest_reviews
@@ -161,7 +154,6 @@ fun GuestReviewsTab(hotelDetails: HotelDetails) {
         Text("Overall Ratings", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
 
-        // Display category ratings
         guestReviews.ratings_categories.forEach { category ->
             val (key, value) = category.entries.first()
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -176,7 +168,6 @@ fun GuestReviewsTab(hotelDetails: HotelDetails) {
         Text("What Guests Are Saying", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
 
-        // Display individual reviews
         guestReviews.reviews_objects.forEach { review ->
             Card(modifier = Modifier
                 .fillMaxWidth()
@@ -191,14 +182,26 @@ fun GuestReviewsTab(hotelDetails: HotelDetails) {
     }
 }
 
-// 7. RENAMED and CLEANED UP: This is the content for the "Room Selection" tab
 @Composable
-fun RoomsTab(hotelDetails: HotelDetails) {
+fun RoomsTab(hotelDetails: HotelDetails, hotelName: String, hotelImagePath: String) {
+    val context = LocalContext.current
     Column(Modifier.padding(16.dp)) {
         hotelDetails.rooms.forEach { room ->
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp)) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+                    .clickable {
+                        val intent = Intent(context, BookingConfirmActivity::class.java).apply {
+                            putExtra("HOTEL_NAME", hotelName)
+                            putExtra("HOTEL_IMAGE_PATH", hotelImagePath)
+                            putExtra("ROOM_TYPE", room.room_type)
+                            putExtra("ROOM_PRICE", room.room_price_for_one_night)
+                            putExtra("MAX_GUESTS", room.room_total_number_of_guests)
+                        }
+                        context.startActivity(intent)
+                    }
+            ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(room.room_type, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Spacer(Modifier.height(8.dp))
@@ -211,4 +214,41 @@ fun RoomsTab(hotelDetails: HotelDetails) {
             }
         }
     }
+}
+
+private fun createDummyHotelDetails(hotelId: Int): HotelDetails {
+    return HotelDetails(
+        hotel_id = hotelId,
+        hotel_name = "Hotel $hotelId",
+        guest_reviews = GuestReviews(
+            ratings_categories = listOf(
+                mapOf("Cleanliness" to 8.0),
+                mapOf("Comfort" to 7.5),
+                mapOf("Location" to 8.5),
+                mapOf("Value for money" to 7.8)
+            ),
+            reviews_objects = listOf(
+                Review("Guest", "Various", "Great hotel with excellent service and amenities."),
+                Review("Traveler", "International", "Comfortable stay with beautiful views.")
+            )
+        ),
+        rooms = listOf(
+            Room(
+                room_id = hotelId * 1000 + 1,
+                room_type = "Standard Room",
+                room_bed_type = "1 double bed",
+                room_total_number_of_guests = 2,
+                room_features = listOf("Free WiFi", "TV", "Private bathroom"),
+                room_price_for_one_night = 100
+            ),
+            Room(
+                room_id = hotelId * 1000 + 2,
+                room_type = "Deluxe Room",
+                room_bed_type = "1 large double bed",
+                room_total_number_of_guests = 2,
+                room_features = listOf("Free WiFi", "TV", "Private bathroom", "Balcony"),
+                room_price_for_one_night = 150
+            )
+        )
+    )
 }

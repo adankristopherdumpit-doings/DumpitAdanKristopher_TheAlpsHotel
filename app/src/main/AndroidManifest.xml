@@ -36,6 +36,12 @@
             android:exported="false"
             android:label="Hotel Details"
             android:theme="@style/Theme.Dumpit_alpshotel" />
+        <activity
+            android:name=".BookingConfirmActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

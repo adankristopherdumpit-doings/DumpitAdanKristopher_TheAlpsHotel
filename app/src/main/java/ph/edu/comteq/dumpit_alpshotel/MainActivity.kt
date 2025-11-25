@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -112,16 +113,32 @@ fun Homepage(modifier: Modifier = Modifier) {
                 contentDescription = "Logo",
                 modifier = androidx.compose.ui.Modifier.size(width = 40.dp, height = 24.dp)
             )
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Profile",
-                modifier = Modifier
-                    .width(40.dp)
-                    .clickable {
-                        val intent = Intent(context, AccountPage::class.java)
-                        context.startActivity(intent)
-                    }
-            )
+            //Right Side Icons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "My Bookings",
+                    modifier = Modifier
+                        .width(40.dp)
+                        .clickable {
+                            val intent = Intent(context, MyBookingsActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                )
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .width(40.dp)
+                        .clickable {
+                            val intent = Intent(context, AccountPage::class.java)
+                            context.startActivity(intent)
+                        }
+                )
+            }
         }
         //Search bar
         OutlinedTextField(

@@ -35,7 +35,7 @@
             "room_features" : ["20 m²","Soundproofing","Flat-screen TV","Free WiFi","Private bathroom"],
             "room_price_for_one_night" : 160
         },{
-            "room_id":1008002,
+            "room_id":1008003,
             "room_type": "Great family Room",
             "room_bed_type" : "1 large double bed and 1 single bed" ,
             "room_total_number_of_guests" : 3,

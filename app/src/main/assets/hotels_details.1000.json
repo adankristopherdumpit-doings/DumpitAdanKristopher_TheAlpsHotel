@@ -1,48 +1,57 @@
 {
     "hotel_id": 1000,
     "hotel_name": "Résidence Pierre & Vacances Premium les Crets",
-    "guest_reviews" : {
-        "ratings_categories" : [
-            {"Staff":8.7},{"Facilities":8.4},{"Cleanliness":8.6}
+    "guest_reviews": {
+        "ratings_categories": [
+            {"Cleanliness": 8.5},
+            {"Comfort": 8.0},
+            {"Location": 7.5},
+            {"Facilities": 8.2},
+            {"Staff": 8.8},
+            {"Value for money": 7.9}
         ],
-        "reviews_objects" : [
-            {"username":"Petri","country":"Finland","review_text":"Location was excellent. In D building we could ski in/out with only 10 meters from our apartment door."},
-            {"username":"Lionel","country":"Australia","review_text":"the apartment was spacious, clean and really well set up. It was warm, cosy and quiet. It was really perfect!"},
-            {"username":"Barroso","country":"Portugal","review_text":"Well located, with supermarket and ski rental just under, ski in (not so out). Nice space, comfortable and with towels and bedding! Has a private place for your boots and skis. View was just breathtaking. Second time here, enjoyed both times!"},
-            {"username":"Jill","country":"Ireland","review_text":"It is the perfect location right next to the slopes. You have everything you need in the apartment with a supermarket just underneath and restaurants. It is very quiet so you aren’t disturb at night. I would most definitely return."}
+        "reviews_objects": [
+            {
+                "username": "Marie",
+                "country": "France",
+                "review_text": "Great location with amazing mountain views. The apartment was clean and had all necessary amenities."
+            },
+            {
+                "username": "Thomas",
+                "country": "Germany",
+                "review_text": "Perfect for families. Close to ski lifts and the staff was very helpful throughout our stay."
+            },
+            {
+                "username": "Sarah",
+                "country": "United Kingdom",
+                "review_text": "Comfortable rooms and good value for money. Would definitely stay here again on our next ski trip."
+            }
         ]
     },
-    "rooms" : [
+    "rooms": [
         {
-            "room_id":1000000,
-            "room_type": "One-Bedroom Apartment - Open Mountain View",
-            "room_bed_type" : "2 double beds" ,
-            "room_total_number_of_guests" : 4,
-            "room_features" : ["1 sofa bed","Entire apartment","35 m²","Private kitchenette","Dishwasher","Flat-screen TV","Mountain view"],
-            "room_price_for_one_night" : 142
-        },{
-            "room_id":1000001,
-            "room_type": "One-Bedroom Apartment",
-            "room_bed_type" : "2 double beds" ,
-            "room_total_number_of_guests" : 4,
-            "room_features" : ["Entire apartment","30 m²","Private kitchenette","Dishwasher","Flat-screen TV"],
-            "room_price_for_one_night" : 105
+            "room_id": 1000001,
+            "room_type": "Standard Double Room",
+            "room_bed_type": "1 large double bed",
+            "room_total_number_of_guests": 2,
+            "room_features": ["Mountain view", "Free WiFi", "Private bathroom", "TV", "Heating"],
+            "room_price_for_one_night": 120
         },
         {
-            "room_id":1000002,
-            "room_type": "One-Bed Apartment",
-            "room_bed_type" : "1 king bed" ,
-            "room_total_number_of_guests" : 2,
-            "room_features" : ["Balcony","24 m²","Flat-screen TV"],
-            "room_price_for_one_night" : 60
-        },{
-            "room_id":1000003,
-            "room_type": "Two-Bedroom Apartment - Open Mountain View",
-            "room_bed_type" : "1 double bed, 2 single beds" ,
-            "room_total_number_of_guests" : 6,
-            "room_features" : ["Entire apartment","45 m²","Private kitchenette","Dishwasher","Flat-screen TV","Flat-screen TV","Balcony"
-                ,"Mountain view","Coffee machine"],
-            "room_price_for_one_night" : 185
+            "room_id": 1000002,
+            "room_type": "Family Suite",
+            "room_bed_type": "1 double bed and 2 single beds",
+            "room_total_number_of_guests": 4,
+            "room_features": ["Balcony", "Mountain view", "Free WiFi", "Kitchenette", "TV", "Private bathroom"],
+            "room_price_for_one_night": 200
+        },
+        {
+            "room_id": 1000003,
+            "room_type": "Superior Room with Alpine View",
+            "room_bed_type": "1 large double bed",
+            "room_total_number_of_guests": 2,
+            "room_features": ["Panoramic alpine view", "Free WiFi", "Private balcony", "Coffee machine", "TV"],
+            "room_price_for_one_night": 180
         }
     ]
 }
